@@ -4,7 +4,7 @@ import java.util.*;import java.io.*;import java.math.*;
 //--------------------------Main-Class---------------------------------
 //=============================================================================
 
-public class F {
+public class A {
 
 	public static void process()throws IOException{
 		
@@ -70,9 +70,9 @@ public class F {
 	
 	static class FastScanner{BufferedReader br; StringTokenizer st;
 	FastScanner()throws FileNotFoundException{
-    br=new BufferedReader(new InputStreamReader(System.in));}
+    	br=new BufferedReader(new InputStreamReader(System.in));}
 	FastScanner(int a)throws FileNotFoundException{
-    br = new BufferedReader(new FileReader("input.txt"));}
+   	br = new BufferedReader(new FileReader("input.txt"));}
     String next()throws IOException{
     while (st == null || !st.hasMoreElements()) {try{
     st = new StringTokenizer(br.readLine());}
