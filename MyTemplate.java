@@ -4,7 +4,7 @@ import java.util.*;import java.io.*;import java.math.*;
 //--------------------------Main-Class---------------------------------
 //=============================================================================
 
-public class A {
+public class F {
 
 	public static void process()throws IOException{
 		
@@ -46,9 +46,9 @@ public class A {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
     
 	static void println(Object o){out.println(o);}
-  static void print(Object o){out.print(o);}
-  static void pflush(Object o){out.println(o);out.flush();}
-  static int ceil(int x, int y) {return (x % y == 0 ? x / y : (x / y + 1));}
+	static void print(Object o){out.print(o);}
+	static void pflush(Object o){out.println(o);out.flush();}
+	static int ceil(int x, int y) {return (x % y == 0 ? x / y : (x / y + 1));}
 	static long ceil(long x, long y) {return (x % y == 0 ? x / y : (x / y + 1));}
 	static int max(int x, int y) {return Math.max(x, y);}
 	static int min(int x, int y) {return Math.min(x, y);}
