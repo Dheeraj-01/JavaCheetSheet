@@ -46,6 +46,7 @@ public class A {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
     
 	static void println(Object o){out.println(o);}
+	static void println(){out.println();}
 	static void print(Object o){out.print(o);}
 	static void pflush(Object o){out.println(o);out.flush();}
 	static int ceil(int x, int y) {return (x % y == 0 ? x / y : (x / y + 1));}
