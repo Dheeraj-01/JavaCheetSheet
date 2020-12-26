@@ -1,6 +1,6 @@
     		static  int MOD = 1000000009;
-		static int MAX = 100005;
-		static int catalan[] = new int[MAX];
+		static int MAX = 1001;
+		static long catalan[] = new long[MAX];
 		static void init(int n) {
 		    catalan[0] = catalan[1] = 1;
 		    for (int i=2; i<=n; i++) {
@@ -15,6 +15,6 @@
 		}				
 		
 		public static void main(String[] args) {
-			init(5);
+			init(1000);
 			System.out.println(Arrays.toString(catalan));
 		}
