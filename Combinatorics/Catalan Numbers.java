@@ -1,4 +1,4 @@
-    static  int MOD = 1000000009;
+    		static  int MOD = 1000000009;
 		static int MAX = 100005;
 		static int catalan[] = new int[MAX];
 		static void init(int n) {
