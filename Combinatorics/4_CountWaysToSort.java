@@ -1,6 +1,6 @@
 
 
-
+static long mod = (int) (1000000007);
 static long countWaysToSort(ArrayList<Pair> arr) {
 		ArrayList<Pair> a = new ArrayList<Pair>(arr);
 		Collections.sort(a);
