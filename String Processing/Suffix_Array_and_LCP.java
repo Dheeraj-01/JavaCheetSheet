@@ -34,9 +34,8 @@
 	        RA[i] = tempRA[i];
 	  } }
 	
-	private static int[] suffixArray(String str) {/* str.length + 1 length of array because 
-	adding Special Character $*/
-		str+="$";
+	private static int[] suffixArray(String str) {
+		
 		int MAX_N = 100010;
 	    c = new int[MAX_N];
 	    RA = new int[MAX_N];
@@ -55,13 +54,34 @@
 	    for(int i=0; i<n; i++)arr[i] = SA[i];
 	    return arr;
 	}
+	
+	private static int[] LCP(int[] suffixArray, char[] S) {//longest common prefix
+		int len = suffixArray.length,h = 0;
+		int rank[] = new int[len];
+		int LCP[] = new int[len];
+		for(int i=0; i<len; i++)rank[suffixArray[i]] = i;
+		for(int i=0; i<len; i++) {
+			if(rank[i] > 0) {
+				int k = suffixArray[rank[i] - 1];
+				while(S[i+h] == S[k+h])h++;
+				LCP[rank[i]] = h;
+				if(h > 0)h--;
+			}
+		}
+		return LCP;
+	}
 
 	public static void process() throws IOException {
 		/* Note : Update Max Length Otherwise get runtime error */
 		String str = sc.next();
-		int arr[] = suffixArray(str);/* str.length + 1 length of array because 
+		str+="$";/* str.length + 1 length of array because 
 		adding Special Character $*/
-		System.out.println(Arrays.toString(arr));
+		int suffixArray[] = suffixArray(str);
+		int LCP[] = LCP(suffixArray,str.toCharArray());
+		System.out.println(Arrays.toString(suffixArray));
+		System.out.println(Arrays.toString(LCP));
 	}
+
+	
 
 	
