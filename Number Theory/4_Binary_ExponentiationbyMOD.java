@@ -1,5 +1,5 @@
 //	a^n % mod
-	private static int power(long a, long n,int mod) {
+	private static long power(long a, long n,int mod) {
 		long res = 1;
 		while(n > 0) {
 			if(n%2 == 0) {
@@ -11,5 +11,5 @@
 				n--;
 			}
 		}
-		return (int) (res%mod);
+		return  (res%mod);
 	}
