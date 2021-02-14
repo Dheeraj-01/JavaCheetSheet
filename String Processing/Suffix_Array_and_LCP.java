@@ -1,61 +1,241 @@
 
-		static char T[];                        // the input string, up to 100K characters
-		static int n;                                             // the length of input string
-
-	  static int[] RA, tempRA;             // rank array and temporary rank array
-	  static Integer[] SA, tempSA;         // suffix array and temporary suffix array
-	  static int[] c;                                         // for counting/radix sort
-	  static void countingSort(int k) {
-	    int i, sum, maxi = Math.max(300, n);   // up to 255 ASCII chars or length of n
-	    for (i = 0; i < 100010; i++) c[i] = 0;                // clear frequency table
-	    for (i = 0; i < n; i++)                    // count the frequency of each rank
-	      c[i + k < n ? RA[i + k] : 0]++;
-	    for (i = sum = 0; i < maxi; i++) {
-	      int t = c[i]; c[i] = sum; sum += t;
-	    }
-	    for (i = 0; i < n; i++)               // shuffle the suffix array if necessary
-	      tempSA[c[SA[i] + k < n ? RA[SA[i] + k] : 0]++] = SA[i];
-	    for (i = 0; i < n; i++)                          // update the suffix array SA
-	      SA[i] = tempSA[i];
-	  }
-
-	static void constructSA() {              // this version can go up to 100000 characters
-	    int i, k, r;
-	    for (i = 0; i < n; i++) RA[i] = T[i];                      // initial rankings
-	    for (i = 0; i < n; i++) SA[i] = i;          // initial SA: {0, 1, 2, ..., n-1}
-	    for (k = 1; k < n; k <<= 1) {            // repeat sorting process log n times
-	      countingSort(k);       // actually radix sort: sort based on the second item
-	      countingSort(0);               // then (stable) sort based on the first item
-	      tempRA[SA[0]] = r = 0;                  // re-ranking; start from rank r = 0
-	      for (i = 1; i < n; i++)                         // compare adjacent suffices
-	        tempRA[SA[i]] =      // if same pair => same rank r; otherwise, increase r
-	          (RA[SA[i]] == RA[SA[i-1]] && RA[SA[i]+k] == RA[SA[i-1]+k]) ? r : ++r;
-	      for (i = 0; i < n; i++)                          // update the rank array RA
-	        RA[i] = tempRA[i];
-	  } }
-	
-	private static int[] suffixArray(String str) {
+	static class SuffixTree {
+		class Edge {
+			/*
+			 * s[first : last] = label (inclusive)
+			 * 
+			 * if an edge is a leaf we will set immediately last as text.length() - 1, instead of 
+			 * using a global variable. This because at any step the suffix to insert is less long than 
+			 * any other path already in the tree.
+			 * 
+			 * PAY ATTENTION: THIS version IS NOT online. To make it online we should introduce the global variable 
+			 * 'end'.
+			 */
+			
+			
+			int first, last;
+			
+			public Edge(int f, int l) {
+				first = f;
+				last = l;
+			}
+		}
 		
-		int MAX_N = 100010;
-	    c = new int[MAX_N];
-	    RA = new int[MAX_N];
-	    tempRA = new int[MAX_N];
-	    SA = new Integer[MAX_N];
-	    tempSA = new Integer[MAX_N];
-	    T = str.toCharArray();
-	    n = T.length;
-
-	    constructSA();                                                   // O(n log n)
-//	    System.out.printf("The Suffix Array of string T = '%s' is shown below (O(n log n) version):\n", new String(T));
-//	    System.out.printf("i\tSA[i]\tSuffix\n");
-//	    for (int i = 0; i < n; i++)
-//	     System.out.printf("%2d\t%2d\t%s\n", i, SA[i], new String(T, SA[i], T.length - SA[i]));
-	    int arr[] = new int[n];
-	    for(int i=0; i<n; i++)arr[i] = SA[i];
-	    return arr;
+		class Node {
+			/*
+			 * Assuming that the alphabet is just {'a', ..., 'z'}.
+			 * For case with bigger alphabet we could pass to an implementation with AVL Tree or better.
+			 */
+			
+			Node[] nodes = new Node['z' - 'a' + 1];
+			Edge[] edges = new Edge['z' - 'a' + 1];
+			
+			int pathLabelLength;
+			int additionalEdge = -1;
+			
+			Node father = null;
+			Node suffixLink = null;
+			
+			int position;
+			int depth;
+			int numberOfLeaves;
+			
+			public Node(int pll, int p) {
+				pathLabelLength = pll;
+				position = p;
+			}
+		}
+		
+		Node root;
+		char[] text;
+		
+		Node[] treeNodes;
+		
+		public SuffixTree(String t) {
+			root = new Node(0, 0);
+			text = (t + "$").toCharArray();
+			
+			treeNodes = new Node[text.length];
+			
+			buildTree();
+		}
+		
+		private void buildTree() {
+			root.suffixLink = root;
+			
+			int firstSuffixToCompute = 0;
+			
+			Node currentNode = root;
+			
+			int nodesCounter = 0;
+			treeNodes[nodesCounter] = root;
+			nodesCounter ++;
+			
+			for(int i = 0; i < text.length; i ++) {
+				boolean rule3 = false;
+				Node lastInternalNode = null;
+				
+				for(int j = firstSuffixToCompute; j <= i; j ++) {
+					Node newInternalNode = null;
+					int numberOfTraversedCharacters = currentNode.pathLabelLength;
+					
+					while(true) {
+						char nextCharacter = text[j + numberOfTraversedCharacters];
+						
+						/*
+						 * If the current node has not an edge which starts with 'nextCharacter'
+						 * we just have to add it.
+						 * 
+						 * PAY ATTENTION: 'j + numberOfTraversedCharacters == j + currentSuffixLength - 1' 
+						 * is ALWAYS true IN FIRST 2 METHODS (in the rest of the loop it is not).
+						 */
+						
+						if(nextCharacter == '$') {
+							currentNode.additionalEdge = j + numberOfTraversedCharacters;
+							firstSuffixToCompute ++;
+							break;
+						}
+						
+						if(currentNode.edges[nextCharacter - 'a'] == null) {
+							currentNode.edges[nextCharacter - 'a'] = new Edge(j + numberOfTraversedCharacters, text.length - 1); // because it is a new leaf
+							break;
+						}
+						
+						int currentSuffixLength = i - j + 1;
+						int edgeLength = currentNode.edges[nextCharacter - 'a'].last - currentNode.edges[nextCharacter - 'a'].first + 1;
+						
+						if(edgeLength < currentSuffixLength - numberOfTraversedCharacters) {
+							numberOfTraversedCharacters += edgeLength;
+							currentNode = currentNode.nodes[nextCharacter - 'a'];
+							continue;
+						}
+						
+						/*
+						 * Checking for rule3.
+						 */
+						
+						char edgeCharacter = text[currentNode.edges[nextCharacter - 'a'].first + (currentSuffixLength - numberOfTraversedCharacters) - 1];
+						char pathCharacter = text[j + currentSuffixLength - 1];
+						
+						rule3 = edgeCharacter == pathCharacter;
+						
+						if(rule3)
+							break;
+						
+						/*
+						 * New internal node.
+						 */
+						
+						newInternalNode = new Node(currentSuffixLength - 1, nodesCounter);
+						
+						treeNodes[nodesCounter] = newInternalNode;
+						nodesCounter ++;
+						
+						newInternalNode.edges[edgeCharacter - 'a'] = new Edge(currentNode.edges[nextCharacter - 'a'].first + (currentSuffixLength - numberOfTraversedCharacters) - 1, currentNode.edges[nextCharacter - 'a'].last);
+						newInternalNode.nodes[edgeCharacter - 'a'] = currentNode.nodes[nextCharacter - 'a'];
+						
+						if(currentNode.nodes[nextCharacter - 'a'] != null)
+							currentNode.nodes[nextCharacter - 'a'].father = newInternalNode;
+						
+						currentNode.edges[nextCharacter - 'a'].last = currentNode.edges[nextCharacter - 'a'].first + (currentSuffixLength - numberOfTraversedCharacters) - 2; // because this is not a leaf anymore
+						currentNode.nodes[nextCharacter - 'a'] = newInternalNode;
+						
+						newInternalNode.father = currentNode;
+						
+						if(pathCharacter == '$')
+							newInternalNode.additionalEdge = j + currentSuffixLength - 1;
+						else
+							newInternalNode.edges[pathCharacter - 'a'] = new Edge(j + currentSuffixLength - 1, text.length - 1); // because this is a new leaf
+					
+						break;
+					}
+					
+					/*
+					 * Suffix link assignment.
+				     */
+							
+					if(lastInternalNode != null) {
+						lastInternalNode.suffixLink = newInternalNode == null ? currentNode : newInternalNode;
+						lastInternalNode = null;
+					}
+							
+					/*
+					 * If the path label of the new internal node is long just 1 character 
+					 * we already know its suffix link and it is the root.
+					 */
+					
+					if(newInternalNode != null) {
+						if(newInternalNode.pathLabelLength == 1)
+							newInternalNode.suffixLink = root;
+						else
+							lastInternalNode = newInternalNode;
+					}
+					
+					if(rule3)
+						break;
+					
+					/*
+					 * If not it means that has been added a leaf, so we have to decrease the depth (of AT MOST 2).
+					 */
+	 
+					if(currentNode.suffixLink != null)
+						currentNode = currentNode.suffixLink;
+					else
+						currentNode = currentNode.father.suffixLink;
+					
+					firstSuffixToCompute ++;
+				}
+			}
+		}
+		
+		public int[] getSuffixArray() {
+			/*
+			 * Because there was not the terminal character '$' in the original text.
+			 */
+			
+			int[] suffixArray = new int[text.length - 1];
+			int c = 0;
+	 
+			Node[] nodes = new Node[text.length];
+			int[] nextCharacter = new int[text.length];
+			int nextToPop = -1;
+			
+			nodes[++ nextToPop] = root;
+			nextCharacter[nextToPop] = 0;
+			
+			while(nextToPop >= 0) {
+				Node currentNode = nodes[nextToPop];
+				int next = nextCharacter[nextToPop --];
+				
+				/*
+				 * We will not include the empty suffix
+				 */
+				
+				if(currentNode.additionalEdge != -1 && next == 0 && currentNode != root)
+					suffixArray[c ++] = currentNode.additionalEdge - currentNode.pathLabelLength;
+				
+				for(int i = next; i <= 'z' - 'a'; i ++) {
+					if(currentNode.edges[i] != null) {
+						if(currentNode.edges[i].last == text.length - 1) {
+							suffixArray[c ++] = currentNode.edges[i].first - currentNode.pathLabelLength;
+						} else {
+							nodes[++ nextToPop] = currentNode;
+							nextCharacter[nextToPop] = i + 1;
+							nodes[++ nextToPop] = currentNode.nodes[i];
+							nextCharacter[nextToPop] = 0;
+							break;
+						}
+					}
+				}
+			}
+			
+			return suffixArray;
+		}
 	}
 	
-	private static int[] LCP(int[] suffixArray, char[] S) {//longest common prefix
+	private static int[] LCP(int[] suffixArray, String Ss) {//longest common prefix
+		Ss+="$";
+		char[] S = Ss.toCharArray();
 		int len = suffixArray.length,h = 0;
 		int rank[] = new int[len];
 		int LCP[] = new int[len];
@@ -72,16 +252,11 @@
 	}
 
 	public static void process() throws IOException {
-		/* Note : Update Max Length Otherwise get runtime error */
 		String str = sc.next();
-		str+="$";/* str.length + 1 length of array because 
-		adding Special Character $*/
-		int suffixArray[] = suffixArray(str);
-		int LCP[] = LCP(suffixArray,str.toCharArray());
-		System.out.println(Arrays.toString(suffixArray));
-		System.out.println(Arrays.toString(LCP));
+		
+		int[] suffixarr = new SuffixTree(str).getSuffixArray();
+		System.out.println(Arrays.toString(suffixarr));
+		int[] lcp = LCP(suffixarr, str);
+		System.out.println(Arrays.toString(lcp));
+		
 	}
-
-	
-
-	
