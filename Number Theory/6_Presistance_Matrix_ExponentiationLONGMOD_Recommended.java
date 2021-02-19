@@ -1,4 +1,6 @@
-static long mod = 1_000_000_007;
+
+
+	static long mod = 1_000_000_007;
 	static class Matrix {
         static long[][] mult(long[][] a, long[][] b, long MOD) {
             if(a[0].length != b.length) return null;
@@ -12,7 +14,7 @@ static long mod = 1_000_000_007;
             }
             return res;
         }
- 
+
         static long[] mult(long[][] a, long[] b, long MOD) {
             if(a[0].length != b.length) return null;
             long[] res = new long[a.length];
@@ -23,7 +25,7 @@ static long mod = 1_000_000_007;
             }
             return res;
         }
- 
+
         static long[][] pow(long[][] a, long b, long MOD) {
             if(b == 1) return a;
             long[][] total = pow(a, b >> 1, MOD);
@@ -31,20 +33,20 @@ static long mod = 1_000_000_007;
             if((b & 1) == 1) total = mult(total, a, MOD);
             return total;
         }
- 
+
         static long add(long a, long b, long MOD) {
             return (a%MOD+b%MOD)%MOD;
         }
- 
+
         static long mult(long a, long b, long MOD) {
             return ((a%MOD)*(b%MOD))%MOD;
         }
     }    
   
   
- 
+
 	public static void process() throws IOException {
- 
+
 		int n = sc.nextInt();
 		long arr[][] = {
 				{0,1,1,1},
