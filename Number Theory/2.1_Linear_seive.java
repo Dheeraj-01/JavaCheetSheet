@@ -1,4 +1,4 @@
-
+	Not use it not wprk properly // warning ⚠ 
 	static int lp[];
 	static ArrayList<Integer> prime;
 	private static void Linear_seive(int N) {
