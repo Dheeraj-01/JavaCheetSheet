@@ -1,7 +1,7 @@
 
-//	a^n % mod
-	private static int power(int a, int n,int mod) {
-		int res = 1;
+	//	a^n % mod
+	private static long power(long a, long n,long mod) {
+		long res = 1;
 		while(n > 0) {
 			if(n%2 == 0) {
 				a = (a%mod * a%mod)%mod;
@@ -16,10 +16,11 @@
 	}
 	
 	// Inverse Of a Number
-	private static int ModInverse(int a, int mod) {
+	private static long ModInverse(long a, long mod) {
 		
 		return power(a, mod-2,mod);
 	}
+
 
 	public static void main(String[] args) {
 		
