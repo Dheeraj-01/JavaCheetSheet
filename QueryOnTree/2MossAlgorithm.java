@@ -6,15 +6,17 @@ import java.util.Scanner;
 
 public class Template {	
 
-	static int N = 2_000_01,MaxValue = 2_000_001;
+	
+
+	static int N = 3_000_08,MaxValue = 3_00_008;
 	static int Block = (int) sqrt(N);
 	static int arr[] = new int[N];
 	static int ans[] = new int[N];
-	static int frq[] = new int[MaxValue];
-	static int frqfrq[] = new int[MaxValue];
+	static int fre[] = new int[MaxValue];
+	static int freOfFre[] = new int[MaxValue];
 	
 	
-	static int MaxNum = 0,MaxCount = 0;
+	static int currMax = 0;
 	
 	
 	static class Query implements Comparable<Query>{
@@ -37,36 +39,49 @@ public class Template {
 	}
 	
 	
+	
 	private static void add(int pos) {
-		frqfrq[frq[arr[pos]]]--;
-		frq[arr[pos]]++;
-		frqfrq[frq[arr[pos]]]++;
-		MaxCount = max(MaxCount,frq[arr[pos]]);
+		int preF = fre[arr[pos]];
+		fre[arr[pos]]++;
+		int currF = fre[arr[pos]];
+		
+		freOfFre[preF]--;
+		freOfFre[currF]++;
+		
+		if(currF > currMax)
+		{
+			currMax = currF;
+		}
 	}
-
+ 
 	private static void remove(int pos) {
-		frqfrq[frq[arr[pos]]]--;
-		if(frqfrq[frq[arr[pos]]] == 0)MaxCount--;
-		frq[arr[pos]]--;
-		frqfrq[frq[arr[pos]]]++;
-		MaxCount = max(MaxCount,frq[arr[pos]]);
+		int preF = fre[arr[pos]];
+		fre[arr[pos]]--;
+		int currF = fre[arr[pos]];
+		
+		freOfFre[preF]--;
+		freOfFre[currF]++;
+		
+		if(currF < currMax)
+		{
+			while(freOfFre[currMax] == 0)
+			currMax--;
+		}
 		
 	}
 
 	public static void process() throws IOException {
 
-		int n = sc.nextInt();
+		int n = sc.nextInt(),q = sc.nextInt();
 		for(int i=0; i<n; i++)arr[i] = sc.nextInt();
-		int q = sc.nextInt();
 		ArrayList<Query> lis = new ArrayList<Query>();
 		for(int i=0; i<q; i++) {
 			int l = sc.nextInt(),r = sc.nextInt();
-			lis.add(new Query(l, r, i));
+			lis.add(new Query(l-1, r-1, i));
 		}
 		
 		Collections.sort(lis);
 //		for(Query e : lis)System.out.println(e.l+" "+e.r+" "+e.index);
-		frqfrq[0] = 1;
 		int ml = 0, mr = -1;
 		for(int i=0; i<q; i++) {
 			int l = lis.get(i).l;
@@ -94,15 +109,23 @@ public class Template {
 				mr--;
 				
 			}
-			
-			
 			// answers
-			ans[lis.get(i).index] = MaxCount;
+			int total = lis.get(i).r - lis.get(i).l + 1;
+			int rem = total - currMax;
+			int half = (total+1)/2;
+			
+			if(currMax <= half)
+			ans[lis.get(i).index] = 1;
+			else
+			{
+				ans[lis.get(i).index] = total - 2*rem;
+			}
+			
 			
 		}
 		
 		for(int i=0; i<q; i++) {
-			System.out.println(ans[i]);
+			println(ans[i]);
 		}
 
 
