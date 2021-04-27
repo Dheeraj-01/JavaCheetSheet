@@ -4,13 +4,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
 
-public class Template {
-	static int N = 30001;
-	static int Block = 500;
-	static int arr[] = new int[30001];
-	static int ans[] = new int[200001];
-	static int frq[] = new int[1000001];
-	static int count = 0;
+public class Template {	
+
+	static int N = 2_000_01,MaxValue = 2_000_001;
+	static int Block = (int) sqrt(N);
+	static int arr[] = new int[N];
+	static int ans[] = new int[N];
+	static int frq[] = new int[MaxValue];
+	static int frqfrq[] = new int[MaxValue];
+	
+	
+	static int MaxNum = 0,MaxCount = 0;
 	
 	
 	static class Query implements Comparable<Query>{
@@ -31,37 +35,38 @@ public class Template {
 		}
 		
 	}
+	
+	
 	private static void add(int pos) {
+		frqfrq[frq[arr[pos]]]--;
 		frq[arr[pos]]++;
-		
-		if(frq[arr[pos]] == 1)
-			count++;
-		
+		frqfrq[frq[arr[pos]]]++;
+		MaxCount = max(MaxCount,frq[arr[pos]]);
 	}
 
 	private static void remove(int pos) {
+		frqfrq[frq[arr[pos]]]--;
+		if(frqfrq[frq[arr[pos]]] == 0)MaxCount--;
 		frq[arr[pos]]--;
-		
-		if(frq[arr[pos]] == 0)
-			count--;	
+		frqfrq[frq[arr[pos]]]++;
+		MaxCount = max(MaxCount,frq[arr[pos]]);
 		
 	}
 
-	public static void main(String[] args) {
-		
-		Scanner sc = new Scanner(System.in);
+	public static void process() throws IOException {
+
 		int n = sc.nextInt();
 		for(int i=0; i<n; i++)arr[i] = sc.nextInt();
 		int q = sc.nextInt();
 		ArrayList<Query> lis = new ArrayList<Query>();
-		for(int i=0; i<n; i++) {
+		for(int i=0; i<q; i++) {
 			int l = sc.nextInt(),r = sc.nextInt();
 			lis.add(new Query(l, r, i));
 		}
 		
 		Collections.sort(lis);
 //		for(Query e : lis)System.out.println(e.l+" "+e.r+" "+e.index);
-		
+		frqfrq[0] = 1;
 		int ml = 0, mr = -1;
 		for(int i=0; i<q; i++) {
 			int l = lis.get(i).l;
@@ -89,8 +94,10 @@ public class Template {
 				mr--;
 				
 			}
+			
+			
 			// answers
-			ans[lis.get(i).index] = count;
+			ans[lis.get(i).index] = MaxCount;
 			
 		}
 		
@@ -98,8 +105,17 @@ public class Template {
 			System.out.println(ans[i]);
 		}
 
+
 	}
-
 	
-
+	static long sqrt(long z) {
+		long sqz = (long) Math.sqrt(z);
+		while (sqz * 1L * sqz < z) {
+			sqz++;
+		}
+		while (sqz * 1L * sqz > z) {
+			sqz--;
+		}
+		return sqz;
+	}
 }
