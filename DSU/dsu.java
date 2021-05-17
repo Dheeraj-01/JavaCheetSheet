@@ -1,27 +1,26 @@
 
-
-static class WeightedQU 
+	static class DSU 
 	{
-	    private int[] id;
-	    private int[] iz;
+	    private int[] parant;
+	    private int[] size;
 
-	    public WeightedQU(int N)
+	    public DSU(int N)
 	    {
-	        id = new int[N];
-	        iz = new int[N];
-	        for(int i = 0; i < id.length; i++)
+	        parant = new int[N];
+	        size = new int[N];
+	        for(int i = 0; i < parant.length; i++)
 	        {
-	            iz[i] = i;
-	            id[i] = i;
+	            size[i] = 1;
+	            parant[i] = i;
 	        }
 	    }
 
 	    public int root(int i)
 	    {
-	        while(i != id[i])
+	        while(i != parant[i])
 	        {
-	            id[i] = id[id[i]];   // this line represents "path compression"
-	            i = id[i];
+	            parant[i] = parant[parant[i]];   // this line represents "path compression"
+	            i = parant[i];
 	        }
 	        return i;
 	    }
@@ -31,24 +30,29 @@ static class WeightedQU
 	        return root(p) == root(q);
 	    }
 
-	    public void union(int p, int q)   // here iz[] is used to "weighting"
+	    public void union(int p, int q)   // here size[] is used to "weighting"
 	    {
 	        int i = root(p);
 	        int j = root(q);
-	        if(iz[i] < iz[j])
+	        if(i == j) {
+	        	// For Aggregate You change Anything
+	        	return;
+	        }
+	        if(size[i] < size[j])
 	        {
-	            id[i] = j;
-	            iz[j] += iz[i];
+	            parant[i] = j;
+	            size[j] += size[i];
 	        }
 	        else
 	        {
-	            id[j] = i;
-	            iz[i] += iz[j];
+	            parant[j] = i;
+	            size[i] += size[j];
 	        }
 	    }
 	}
-  
-  
-  public static void main(String[] args) {
-		WeightedQU dsu = new WeightedQU(n);
+
+
+
+public static void process() throws IOException {
+		DSU dsu = new DSU(100000);
 	}
