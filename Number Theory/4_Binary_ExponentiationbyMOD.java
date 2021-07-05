@@ -1,15 +1,15 @@
 //	a^n % mod
-	private static long power(long a, long n,int mod) {
-		long res = 1;
-		while(n > 0) {
-			if(n%2 == 0) {
-				a = (a%mod * a%mod)%mod;
-				n/=2;
-			}
-			else {
-				res = (res%mod * a%mod)%mod;
-				n--;
-			}
-		}
-		return  (res%mod);
-	}
+	public static long power(long x, long y, long p)
+    {
+        //0^0 = 1
+        long res = 1L;
+        x = x%p;
+        while(y > 0)
+        {
+            if((y&1)==1)
+                res = (res*x)%p;
+            y >>= 1;
+            x = (x*x)%p;
+        }
+        return res;
+    }
