@@ -9,92 +9,89 @@
         return result; 
     } 
     
-    //static ArrayList<Integer> arr[];
-    static int N = 0;
-    static int n = 1001;
+    private static ArrayList<Integer>[] adj;
+    static int N = 2_000_05;
     
-    static int maxN = log2(n);
+    static int maxN = log2(N);
     static int level[] = new int[N];
     static int LCA[][] = new int[N][maxN+1];
-
-	private static ArrayList<Integer>[] arr;
-  
-private static void init(int n) {
-		
-	dfsForLCA(1,0,-1);
-	
-	for(int i=1; i<=maxN; i++) {
-		for(int j=1; j<=n; j++) {
+    
+	private static void init(int n, int root) {
 			
-			if(LCA[j][i-1] != -1) {
+		dfsForLCA(root,0,-1);
+		
+		for(int i=1; i<=maxN; i++) {
+			for(int j=1; j<=n; j++) {
 				
-				int par = LCA[j][i-1];
-				LCA[j][i] = LCA[par][i-1];
+				if(LCA[j][i-1] != -1) {
+					
+					int par = LCA[j][i-1];
+					LCA[j][i] = LCA[par][i-1];
+				}
+				
 			}
+		}
+			
+	}
+	
+	private static void dfsForLCA(int node, int lvl, int par) {
+		
+		level[node] = lvl;
+		LCA[node][0] = par;
+		
+		for(int child : adj[node]) {
+			if(child != par) {
+				dfsForLCA(child, lvl+1, node);
+			}
+		}
+		
+		
+	}
+	
+	
+	private static int getLCA(int x, int y) {
+		int a = -1;
+		int b = -1;
+		if(level[x] > level[y]) {
+			b = x;
+			a = y;
+		}
+		else {
+			a = x;
+			b = y;
+		}
+		
+		
+		int d = level[b] - level[a];
+		
+		while(d > 0) {
+			int i = log2(d);
+			b = LCA[b][i];
+			d -= (1<<i);
 			
 		}
-	}
 		
-}
-
-private static void dfsForLCA(int node, int lvl, int par) {
-	
-	level[node] = lvl;
-	LCA[node][0] = par;
-	
-	for(int child : arr[node]) {
-		if(child != par) {
-			dfsForLCA(child, lvl+1, node);
+		if(a == b)return a;
+		
+		for(int i=maxN; i>=0; i--) {
+		
+			if(LCA[a][i] != -1 && (LCA[a][i] != LCA[b][i])) {
+				a = LCA[a][i];
+				b = LCA[b][i];
+			}
 		}
+			
+		return LCA[a][0];
 	}
 	
 	
-}
-
-
-private static int getLCA(int x, int y) {
-	int a = -1;
-	int b = -1;
-	if(level[x] > level[y]) {
-		b = x;
-		a = y;
+	
+	// get Distance Between Two Node
+	
+	static int getDistance(int a, int b) {
+		int lca = getLCA(a, b);
+		return level[a] + level[b] - 2*level[lca];
 	}
-	else {
-		a = x;
-		b = y;
-	}
-	
-	
-	int d = level[b] - level[a];
-	
-	while(d > 0) {
-		int i = log2(d);
-		b = LCA[b][i];
-		d -= (1<<i);
-		
-	}
-	
-	if(a == b)return a;
-	
-	for(int i=maxN; i>=0; i--) {
-	
-		if(LCA[a][i] != -1 && (LCA[a][i] != LCA[b][i])) {
-			a = LCA[a][i];
-			b = LCA[b][i];
-		}
-	}
-		
-	return LCA[a][0];
-}
-
-
-
-// get Distance Between Two Node
-
-static int getDistance(int a, int b) {
-	int lca = getLCA(a, b);
-	return level[a] + level[b] - 2*level[lca];
-}
 
 
 
@@ -123,7 +120,7 @@ public static void main(String[] args) {
       	arr[b].add(a);
       }
       
-      init(n);
+      init(n, 1); // 1 is root
       
 //      int val = getLCA(8,7);
       int dis = getDistance(8, 7);
