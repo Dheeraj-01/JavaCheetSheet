@@ -71,25 +71,25 @@ public class A {
 	
 	static class FastScanner{BufferedReader br; StringTokenizer st;
 	FastScanner()throws FileNotFoundException{
-    	br=new BufferedReader(new InputStreamReader(System.in));}
+	br=new BufferedReader(new InputStreamReader(System.in));}
 	FastScanner(int a)throws FileNotFoundException{
-   	br = new BufferedReader(new FileReader("input.txt"));}
-    String next()throws IOException{
-    while (st == null || !st.hasMoreElements()) {try{
-    st = new StringTokenizer(br.readLine());}
-    catch (IOException  e){ e.printStackTrace(); }}
-    return st.nextToken(); } int nextInt() throws IOException{
-    return Integer.parseInt(next());}
-    long nextLong() throws IOException
-    {return Long.parseLong(next());}
-    double nextDouble()throws IOException { return Double.parseDouble(next()); }
-    String nextLine() throws IOException{ String str = ""; try{
-    str = br.readLine();} catch (IOException e){
-    e.printStackTrace();} return str;}
-    int[] readArray(int n)throws IOException{int[]A=new int[n];
-    for(int i=0;i!=n;i++){A[i]=sc.nextInt();}return A;}
-    long[] readArrayLong(int n)throws IOException{long[]A=new long[n];
-    for(int i=0;i!=n;i++){A[i]=sc.nextLong();}return A;}}
+	br = new BufferedReader(new FileReader("input.txt"));}
+	String next()throws IOException{
+	while (st == null || !st.hasMoreElements()) {try{
+	st = new StringTokenizer(br.readLine());}
+	catch (IOException  e){ e.printStackTrace(); }}
+	return st.nextToken(); } int nextInt() throws IOException{
+	return Integer.parseInt(next());}
+	long nextLong() throws IOException
+	{return Long.parseLong(next());}
+	double nextDouble()throws IOException { return Double.parseDouble(next()); }
+	String nextLine() throws IOException{ String str = ""; try{
+	str = br.readLine();} catch (IOException e){
+	e.printStackTrace();} return str;}
+	int[] readArray(int n)throws IOException{int[]A=new int[n];
+	for(int i=0;i!=n;i++){A[i]=sc.nextInt();}return A;}
+	long[] readArrayLong(int n)throws IOException{long[]A=new long[n];
+	for(int i=0;i!=n;i++){A[i]=sc.nextLong();}return A;}}
 	
 	static void ruffleSort(int[] a) {Random get = new Random();
 		for (int i = 0; i < a.length; i++) {int r = get.nextInt(a.length);
